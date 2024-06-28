@@ -1,23 +1,30 @@
 # mymodern
 
-Program that scrapes web pages at one or more public libraries' web sites. It
-parses the web pages using CSS selector rules and lists checked out books and
-books on hold ready for pickup.
 
-The program is a command line program written in [Crystal][]. It is
-'structured' to use Crystal's concurrency support to have more than one fiber
-waiting for http requests to complete.
+mymodern is a command line program written in [Crystal][] that scrapes web
+pages from public library websites. It uses CSS selector rules to parse the
+pages and lists checked-out books and books on hold ready for pickup.
 
-The program is somewhat modular, you can define a module for your town's
-library website, and if you want, modules for another library or two where
-you're a regular patron. You supply not only data used to login and fetch pages
-but code to scrape the fetched webpages.
+The program uses Crystal's concurrency support to handle multiple HTTP requests
+simultaneously. It is modular, allowing you to define modules for different
+library websites and customize the scraping logic for each.
+
 
 ## Installation
 
-In the project directory run `shards install`, then `make`.
+In the project directory run `shards install`, then `shards build`.
 
-The library kostya/myhtml includes native c, and there's a compile step for it.
+The library [kostya/lexbor] includes native c, and there's a compile step for it.
+
+The library will be installed locally within your project directory.
+
+please see our [Detailed README](project_docs/DETAILED_README.md)
+
+project_docs/DETAILED_README.md
+project_docs/PROJECT_STRUCTURE.md
+
+(DETAILED_README.md).
+
 
 ## Usage
 
@@ -98,19 +105,18 @@ being equal, runs in constant time no matter how many you're doing. *
 1 web site, 1.5 times faster. All things being equal, 2 websites, could be 3
 times faster, 3 web sites, 4.5 times faster. Conceivably.
 
+
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/mymodest/fork>{:t})
-2. Create your feature branch (`git checkout -b my-new-feature`)
+1. Fork the repository (<https://github.com/Traven-B/mymodern/fork>)
+2. Create a new feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
 ## Contributors
 
-- [your-github-user](https://github.com/your-github-user){:t} Michael Kamb -
-  creator, maintainer
+- [Traven-B](https://github.com/Traven-B) Michael Kamb - creator, maintainer
 
-{:t: target="_blank"}
-[Crystal]: https://crystal-lang.org/
-{:t}
+[Crystal]: https://crystal-lang.org
+[kostya/lexbor]: https://github.com/kostya/lexbor
