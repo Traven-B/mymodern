@@ -41,7 +41,7 @@ def self.lib_data
 end
 ```
 
-# The lib_data method.
+## The first four properties of the lib_data method.
 
 ```
 post_data:           HennepinSecrets::POST_DATA,
@@ -70,14 +70,6 @@ end
 
 Part of the hennepin module is defined in hennepin_secrets.cr, so the library card number and secret pin are in a separate file, as a first idea for keeping them secret.
 
-# In hennepin_secrets.cr
-
-```
-module Hennepin
-  HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
-end
-```
-
 The string is the login form information for a form with fields named card_number and user_pin.
 
 The string is sent as is, when supplied as an argument to an already written post request.
@@ -87,7 +79,7 @@ login_response = @@http_client.post(
     data_param[:post_url], form: data_param[:post_data])
 ```
 
-# Specifying POST_DATA constant
+## Specifying POST_DATA constant
 
 ```
 module Hennepin
@@ -105,7 +97,7 @@ method="post">
   <input name="commit"      type="submit"   title="Log In">
 ```
 
-# The Hennepin module
+## The Hennepin module
 
 ```
 module Hennepin  # hennepin_secrets.cr file
@@ -123,7 +115,7 @@ module Hennepin   # hennepin.cr file
       etc, etc...
 ```
 
-# Specifying post_url: value
+## Specifying post_url: value
 
 ```
 <form action=
@@ -136,7 +128,7 @@ method="post">
 
 The url we post to seems to be the url of the login page or we should say is the value of the action attribute of the form tag or the formaction attribute of the input tag with type="submit" or a button with a formaction.
 
-# The lib_data method.
+## The next four properties of the lib_data method.
 
 Besides the post_data and 3 url's in the lib_data method we have
 
@@ -152,7 +144,7 @@ def self.lib_data
 end
 ```
 
-# lib_data print_name:
+## lib_data print_name:
 
 ```
 print_name: "The Municipal Library of Kalamazoo Michigan"
@@ -172,7 +164,7 @@ A History of America in Ten Strikes
 Wednesday November 14, 2018
 ```
 
-# lib_data fixtures
+## lib_data fixtures
 
 ```
 checked_out_fixture: "h_c_v2.html",
@@ -185,7 +177,7 @@ When you write the parse checkedout page and parse on hold page methods, you wil
 
 This program still has code that refers to the web pages you should (still) have on disk.
 
-# lib_data fixtures
+## lib_data fixtures
 
 ```
 checked_out_fixture: "h_c_v2.html",
@@ -195,13 +187,6 @@ holds_fixture:       "h_h_v2.html",
 The name of the checked out books web page is the value for the checked_out_fixture key.
 
 And the name of the on hold web page on disk, h_h_v2.html in this example, is the value for the holds_fixture key.
-
-# lib_data fixtures
-
-```
-checked_out_fixture: "h_c_v2.html",
-holds_fixture:       "h_h_v2.html",
-```
 
 When you supply the '- -mock' option when you run the program, the program uses a mock http client that associates urls that get web pages with files on the disk.
 
@@ -237,29 +222,6 @@ def self.parse_checkedout_page(page)
 def self.parse_on_hold_page(page)
 ```
 
-# The parse methods
-
-Here are two possible problems with parsing web pages at public library web sites. Or any web page.
-
-Some Web 2.0 XMLHttpRequest process, or whatever the children are using this century, that causes a get of a web page to not return a complete page. You got a page but it doesn't contain the information you want, presumably it will be filled in later somehow.
-
-# The parse methods
-
-You got a page but it doesn't contain the information you want. Because fancy. Is what I'm positing.
-
-I'm guessing public library web sites are not that cutting edge. If it is, maybe look for a set of web pages that is the previous interface. The classic interface as it were. Or look for a simple 'print version' of the webpage that consists of old school tables.
-
-# The parse methods
-
-Second problem, just saying, would be...\\nYou got a page but the HTML tags and classes are thoroughly obscured with various and sundry artifacts.
-
-When working on discovering the structure of the page, delete the extra stuff, and pretty print what's left. The program consumes the large complex thing, but when figuring it out just work with HTML tags and class attributes, as Nature intended.
-
-# The parse methods
-
-\\n... when figuring it out just work with HTML tags and class attributes, as Nature intended.\\n
-
->“Take a minute to think about it, and then guess,” said the Red Queen. “Meanwhile, we’ll drink your health..."
 
 # The parse methods
 
@@ -273,7 +235,7 @@ books_out = doc.css("div.cp-checked-out-item").to_a.map do |book_part|
 books_out = doc.css("table tr.patFuncEntry").to_a.map do |book_part|
 ```
 
-# The parse methods
+# a variation on the high level routine
 
 The St. Paul parse_on_hold_page method has a conditional to test for books whose hold status is Ready. (see next slide for comments)
 
@@ -294,7 +256,7 @@ def self.parse_on_hold_page(page)
 end
 ```
 
-# The parse methods
+# a variation continued
 
 ```
 For on hold books, status might be
@@ -322,12 +284,6 @@ def self.parse_on_hold_page(page)
   books_on_hold.sort { |a, b| Recs.holds_compare(a, b) }
 end
 ```
-
-## Property
-
-hide-title
-:   true
-
 
 # Development
 
@@ -425,6 +381,6 @@ So this program can be used to scrape web pages at 1, 2, or 3 libraries, and all
 
 \* Because concurrency.
 
-# here's a picture of a bunny\\nwith a pancake on it's head
+# here's a picture of a bunny with a pancake on it's head
 
 ![](dorayaki_259_320-f6d17158.jpg)
