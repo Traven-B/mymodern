@@ -1,0 +1,9 @@
+# /docs/
+/lib/
+/bin/
+/.shards/
+*.dwarf
+
+# Ignore vim swap files
+.*.s[a-w][a-z]
+.s[a-w][a-z]

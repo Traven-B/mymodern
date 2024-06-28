@@ -1,0 +1,15 @@
+name: mymodern
+version: 0.1.0
+authors:
+  - Michael Kamb <michael.kamb@yahoo.com>
+
+targets:
+  mymodern:
+    main: src/cli.cr
+
+dependencies:
+  lexbor:
+    github: kostya/lexbor
+
+crystal: '>= 1.11.2'
+license: MIT
