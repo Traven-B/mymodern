@@ -1,14 +1,12 @@
-# mymodern is somewhat modular
+# mymodern Project Structure
 
-You set up to scrape one or two libraries' websites by writing Crystal code.
+mymodern is somewhat modular. You set up to scrape one or two libraries' websites by writing Crystal code. The code that calls upon your code doesn't really care about how many modules you've supplied or what you named them.
 
-The code that calls upon your code doesn't really care about how many modules you've supplied or what you named them.
+## Library Module Structure
 
-# hennepin.cr
+Supply a file like this for each library website you want to scrape. You implement these 3 methods:
 
-Supply a file like this for each library website you want to do. You implement these 3 methods.
-
-```
+```crystal
 module Hennepin
   def self.lib_data
     # returns data in the form of a NamedTuple
@@ -20,137 +18,131 @@ module Hennepin
   def self.parse_on_hold_page(page)
     # return a sorted array of OnHoldRecord
 ```
+
 And whatever other helpers to use when parsing the web pages.
 
-# The lib_data method.
+### The lib_data method
 
 The {}'s and what's inside them is a named tuple that the method returns. The method name and keys are the same in another library's module, the values are specific to Hennepin.
 
-```
+```crystal
 def self.lib_data
   {
-    post_data:           HennepinSecrets::POST_DATA,
-    post_url:            HENN_BASE_URL + "/user/login?destination=%2F",
-    checked_out_url:     HENN_BASE_URL + "/v2/checkedout",
-    holds_url:           HENN_BASE_URL + "/v2/holds/ready_for_pickup",
-    print_name:          "Hennepin",
+    post_data: HennepinSecrets::POST_DATA,
+    post_url: HENN_BASE_URL + "/user/login?destination=%2F",
+    checked_out_url: HENN_BASE_URL + "/v2/checkedout",
+    holds_url: HENN_BASE_URL + "/v2/holds/ready_for_pickup",
+    print_name: "Hennepin",
     checked_out_fixture: "h_c_v2.html",
-    holds_fixture:       "h_h_v2.html",
-    trace_name:          "Hennepin",
+    holds_fixture: "h_h_v2.html",
+    trace_name: "Hennepin",
   }
 end
 ```
 
-## The first four properties of the lib_data method.
+#### Key properties of the lib_data method
 
-```
-post_data:           HennepinSecrets::POST_DATA,
-post_url:            HENN_BASE_URL + "/user/login?destination=%2F",
-checked_out_url:     HENN_BASE_URL + "/v2/checkedout",
-holds_url:           HENN_BASE_URL + "/v2/holds/ready_for_pickup",
+```crystal
+post_data: HennepinSecrets::POST_DATA,
+post_url: HENN_BASE_URL + "/user/login?destination=%2F",
+checked_out_url: HENN_BASE_URL + "/v2/checkedout",
+holds_url: HENN_BASE_URL + "/v2/holds/ready_for_pickup",
 ```
 
 Already existing code uses the lib_data information to post the 'post_data' to the 'post_url', and then get the pages at the 'checked_out_url' and 'holds_url'.
 
-```
-login_response =
-  @@http_client.post(data_param[:post_url], form: data_param[:post_data])
-
-the_response =
-  @@http_client.get(the_url, cookie_headers)
+```crystal
+login_response = @@http_client.post(data_param[:post_url], form: data_param[:post_data])
+the_response = @@http_client.get(the_url, cookie_headers)
 ```
 
-# In hennepin_secrets.cr
+## Secrets Management
 
-```
+### In hennepin_secrets.cr
+
+```crystal
 module Hennepin
   HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
 end
 ```
 
-Part of the hennepin module is defined in hennepin_secrets.cr, so the library card number and secret pin are in a separate file, as a first idea for keeping them secret.
+Part of the hennepin module is defined in hennepin_secrets.cr, so the library card number and secret pin are in a separate file, as a first idea for keeping them secret. The string is the login form information for a form with fields named card_number and user_pin. The string is sent as is, when supplied as an argument to an already written post request.
 
-The string is the login form information for a form with fields named card_number and user_pin.
-
-The string is sent as is, when supplied as an argument to an already written post request.
-
-```
+```crystal
 login_response = @@http_client.post(
-    data_param[:post_url], form: data_param[:post_data])
+  data_param[:post_url],
+  form: data_param[:post_data]
+)
 ```
 
-## Specifying POST_DATA constant
+### Specifying POST_DATA constant
 
-```
+The `POST_DATA` constant is defined with the library card number and PIN:
+
+```crystal
 module Hennepin
   HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
 end
 ```
-The card_number and user_pin in the above string are values of name attributes of input tags in the website's login form shown below.
 
-```
-<form action=
-"https://thelibrary.com/user/login?destination="
-method="post">
+These card_number and user_pin in the above string correspond to the `name` attributes of input tags in the library's login form:
+
+```html
+<form action="https://thelibrary.com/user/login?destination=" method="post">
   <input name="card_number" type="text">
   <input name="user_pin"    type="password" value="">
   <input name="commit"      type="submit"   title="Log In">
+</form>
 ```
 
-## The Hennepin module
+## Module Structure
 
-```
-module Hennepin  # hennepin_secrets.cr file
-  HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
-end
-```
+### The Hennepin module spans 2 files
 
-HennepinSecrets::POST_DATA is mentioned in the more complete definition of the hennepin module in the hennepin.cr file.
+1. In `hennepin_secrets.cr`:
+   ```crystal
+   module Hennepin
+     HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
+   end
+   ```
 
-```
-module Hennepin   # hennepin.cr file
-  def self.lib_data
-    {
-      post_data:     HennepinSecrets::POST_DATA,
-      etc, etc...
-```
+2. In `hennepin.cr`:
+   ```crystal
+   module Hennepin
+     def self.lib_data
+       {
+         post_data: HennepinSecrets::POST_DATA,
+         # ... other properties
+       }
+     end
+   end
+   ```
 
-## Specifying post_url: value
+The constant HennepinSecrets::POST_DATA is defined in hennepin_secrets.cr and
+is used in the in the otherwise complete definition of the hennepin module in the
+hennepin.cr file.
 
-```
-<form action=
-"https://thelibrary.com/user/login?destination="
-method="post">
-  <input name="card_number" type="text">
-  <input name="user_pin"    type="password" value="">
-  <input name="commit"      type="submit"   title="Log In">
-```
+### Specifying post_url value
 
-The url we post to seems to be the url of the login page or we should say is the value of the action attribute of the form tag or the formaction attribute of the input tag with type="submit" or a button with a formaction.
+The `post_url` value in `lib_data` should match the `action` attribute of the login form:
 
-## The next four properties of the lib_data method.
-
-Besides the post_data and 3 url's in the lib_data method we have
-
-```
-def self.lib_data
-  {
-    ...
-    print_name:          "Hennepin",
-    checked_out_fixture: "h_c_v2.html",
-    holds_fixture:       "h_h_v2.html",
-    trace_name:          "Hennepin",
-  }
-end
+```html
+<form action="https://thelibrary.com/user/login?destination=" method="post">
+  <!-- form inputs -->
+</form>
 ```
 
-## lib_data print_name:
+Or we should say is the value of the action attribute of the form tag or the formaction attribute of the input tag with type="submit" or a button with a formaction.
 
-```
+## Additional lib_data Properties
+
+### Print Name
+
+```crystal
 print_name: "The Municipal Library of Kalamazoo Michigan"
 ```
 
-How you want the library's name to appear in the report.
+This property determines how the library's name appears in the report:
 
 ```
 The Municipal Library of Kalamazoo Michigan Books Out
@@ -164,41 +156,28 @@ A History of America in Ten Strikes
 Wednesday November 14, 2018
 ```
 
-## lib_data fixtures
+### Fixtures for Testing
 
-```
+```crystal
 checked_out_fixture: "h_c_v2.html",
 holds_fixture:       "h_h_v2.html",
 ```
 
-Given the '- -mock' option, the program gets webpages from the disk instead of the internet.
+These properties specify the names of HTML files used for testing with the `--mock` option. The program uses these local files instead of fetching from the internet.
 
-When you write the parse checkedout page and parse on hold page methods, you will probably get the pages in your web browser, save them, and puzzle it out.
+Here, h_c_v2.html and h_h_v2.html name the checked out books web page, and the on hold web page on disk.
 
-This program still has code that refers to the web pages you should (still) have on disk.
+Put your pages where the already existing ones are. (or look in
+my_mock_client.cr to see the path name, and admire how cleverly we associate
+the URL's with the fixtures)
 
-## lib_data fixtures
+### Trace Name
 
-```
-checked_out_fixture: "h_c_v2.html",
-holds_fixture:       "h_h_v2.html",
-```
-
-The name of the checked out books web page is the value for the checked_out_fixture key.
-
-And the name of the on hold web page on disk, h_h_v2.html in this example, is the value for the holds_fixture key.
-
-When you supply the '- -mock' option when you run the program, the program uses a mock http client that associates urls that get web pages with files on the disk.
-
-This is done for you in my_mock_client.cr. The only part that is somewhat hard coded is the directory path to the webpages. Put your pages where the already existing ones are.
-
-# lib_data trace_name:
-
-```
-trace_name:          "Hennepin",
+```crystal
+trace_name: "Hennepin",
 ```
 
-Given the '- -trace' option, the program prints trace messages that demonstrate concurrency when fetching web pages. This value represents the name of the library in the trace messages.
+This property is used in trace messages when the `--trace` option is provided, demonstrating concurrency in web page fetching:
 
 ```
 0.021  :  fetch_pair : doing post for Hennepin
@@ -206,57 +185,65 @@ Given the '- -trace' option, the program prints trace messages that demonstrate 
 2.067  :  fetch_pair : done with post for StPaul
 ```
 
-# The parse methods
+Choose a short name to represent the name of the library in the messages.
 
-Each of the one or two or three modules for the one or two or three libraries we are scraping not only need a
+## Parsing Methods
 
-```
-def self.lib_data
-```
+Each library module requires three key methods:
 
-method, but also this pair of methods
+1. `self.lib_data`
+2. `self.parse_checkedout_page(page)`
+3. `self.parse_on_hold_page(page)`
 
-```
+Let's examine the parse methods.
+
+### parse_checkedout_page Method
+
+This method parses the checked-out books page:
+
+```crystal
 def self.parse_checkedout_page(page)
-
-def self.parse_on_hold_page(page)
-```
-
-
-# The parse methods
-
-Once you've found the parts of the pages that represent the sequence of books in the webpages, just look at the example code.
-
-The two libraries I'm doing have top level parse_checkedout_page(page) methods differing only in their css selector rules, one page has books inside of divs, the other uses table rows.
-
-```
-books_out = doc.css("div.cp-checked-out-item").to_a.map do |book_part|
-# versus
-books_out = doc.css("table tr.patFuncEntry").to_a.map do |book_part|
-```
-
-# a variation on the high level routine
-
-The St. Paul parse_on_hold_page method has a conditional to test for books whose hold status is Ready. (see next slide for comments)
-
-```
-def self.parse_on_hold_page(page)
   doc = Myhtml::Parser.new(page)
-  books_on_hold =
-  doc.css("table tr.patFuncEntry").to_a.compact_map do |book_part|
-    td_status = book_part.css("td.patFuncStatus").first
-    status = td_status.inner_text.strip
-    if status.match(/^Ready/)
-      the_title = find_on_hold_title(book_part)
-      the_date = find_on_hold_date(status)
-      OnHoldRecord.new(the_title, the_date)
-    end
+  books_out = doc.css("div.cp-checked-out-item").to_a.map do |book_part|
+    # Parse book information
   end
-  books_on_hold.sort { |a, b| Recs.holds_compare(a, b) }
+  # Sort and return books_out
 end
 ```
 
-# a variation continued
+It might be the top level parse method for one kind of page differs from another library's  only in its CSS selector rule.
+Here we see `table` in this parse_checkedout_page method, above we saw `div`.
+
+
+It might be the top level parse method for one kind of page differs from another library's  only in its CSS selector rule.
+Below we see `table` in a parse_checkedout_page method, above we see `div`.
+
+```crystal
+books_out = doc.css("table tr.patFuncEntry").to_a.map do |book_part|
+  # Parse book information
+end
+```
+
+### parse_on_hold_page Method
+
+This top level method to parse an on hold page is not used with a URL to ask for a page with
+only books on hold that are ready for pickup, nor does it have class attributes that mark
+books as ready for pickup.
+
+So we have a conditional to test actual text in the page for books whose hold status is Ready.
+When the `if status.match(/^Ready/)` succeeds, then creation of an hold record is the last statement evaluated by the if,
+and is also the last thing evaluated by the block, and so the record is mapped into the array being
+constructed and eventually assigned to books_on_hold.
+
+When the if does a test and fails to finds a book that's `Ready`, it actually produces a nil.
+So we are mapping a sequence OnHoldRecords and nils into an array.
+
+doc.css(...) makes a sequence, but it doesn't respond to map, so we first make
+it an array with `.to_a`. But note we say compact_map, not map. We could
+.compact the array to remove the nils, but we can say .compact_map instead of
+.map as another way to filter out the spurious nils.
+
+
 
 ```
 For on hold books, status might be
@@ -271,8 +258,7 @@ This allows operating only on book_parts that matched /^Ready/
 
 def self.parse_on_hold_page(page)
   doc = Myhtml::Parser.new(page)
-  books_on_hold =
-  doc.css("table tr.patFuncEntry").to_a.compact_map do |book_part|
+  books_on_hold = doc.css("table tr.patFuncEntry").to_a.compact_map do |book_part|
     td_status = book_part.css("td.patFuncStatus").first
     status = td_status.inner_text.strip
     if status.match(/^Ready/)
@@ -285,102 +271,70 @@ def self.parse_on_hold_page(page)
 end
 ```
 
-# Development
 
-The program calls upon identically named methods provided by one or another library's module.
 
-```
-module Hennepin
-  def self.lib_data
-    # return a NamedTuple
+## Integrating Your Changes
 
-  def self.parse_checkedout_page(page)
-    # return a sorted array of CheckedOutRecord
-    # the record and comparison definitions are done elsewhere
+To make your specific library modules known to the existing code:
 
-  def self.parse_on_hold_page(page)
-    # return a sorted array of OnHoldRecord
-```
+1. Create a file named `module_names.cr` with the following content:
 
-# Development
+   ```crystal
+   require "./your_library"
+   require "./your_library_secrets"
+   require "./maybe_another_library"
+   require "./maybe_another_library_secrets"
 
-```
-require "./hennepin"
-require "./hennepin_secrets"
-require "./stpaul"
-require "./stpaul_secrets"
+   MODULE_NAMES = [YourLibrary, AnotherLibrary]
+   ```
 
-MODULE_NAMES = [Hennepin, StPaul]
-```
+   The trick is module_names.cr and MODULE_NAMES are spelled exactly as shown.
 
-Code for another library where you're a regular patron would provide the same, and parts of the program that invoke these methods iterate over an array of the module names, and don't hard code the number or names of the modules.
+2. The main program already includes this file:
 
-# Development
+   ```crystal
+   require "http/client"
+   require "myhtml"
+   require "./record_types"
+   require "./print"
+   require "./my_mock_client"
 
-```
-require "./hennepin"
-require "./hennepin_secrets"
-require "./stpaul"
-require "./stpaul_secrets"
+   require "./module_names"
+   ```
 
-MODULE_NAMES = [Hennepin, StPaul]
-```
+3. The program uses the `MODULE_NAMES` constant to work with the libraries you've defined:
 
-You can adapt the modules that define these few methods, name them Springfield and Shelbyville, and require them from a single file which also lists them in an array of module names.
+   ```crystal
+   def self.concurrent_network_part
+     the_channels = MODULE_NAMES.map do |a_module|
+       the_channel = PagesChannel.new
+       the_params = a_module.lib_data
+       spawn fetch_pair(the_channel, the_params)
+       {the_channel, a_module}
+     end
+     # Additional processing
+   end
+   ```
 
-# Development
+## Development Process
 
-```
-require "./hennepin"
-require "./hennepin_secrets"
-require "./stpaul"
-require "./stpaul_secrets"
+1. Implement the required methods for each library module:
+   - `self.lib_data`
+   - `self.parse_checkedout_page(page)`
+   - `self.parse_on_hold_page(page)`
 
-MODULE_NAMES = [Hennepin, StPaul]
-```
+2. Add your library modules to `module_names.cr`.
 
-The file with content similar to the above must be named 'module_names.cr'
+3. The existing code handles HTTP requests, concurrent processing, and overall program flow.
 
-# Development
+4. Your code focuses on parsing the library web pages.
 
-The already written code has the aforementioned file name in its list of required files.
+5. You also provide login data to post, a URL to post to, and two URL's that return the pages we want.
+   And, 2 examples of the wanted pages, which are fixtures used by the program in mock mode.
 
-```
-require "http/client"
-require "myhtml"
-require "./record_types"
-require "./print"
-require "./my_mock_client"
+## Conclusion
 
-require "./module_names"
-```
-
-# Development
-
-In module_names.cr the constant naming the array appears in the already written code.
-
-```
-MODULE_NAMES = [Hennepin, StPaul]
-```
-
-```
-  def self.concurrent_network_part
-    the_channels = MODULE_NAMES.map do |a_module|
-      the_channel = PagesChannel.new
-      the_params = a_module.lib_data
-      spawn fetch_pair(the_channel, the_params)
-      {the_channel, a_module}
-    end
-    # etc
-  end
-```
-
-# Development
-
-So this program can be used to scrape web pages at 1, 2, or 3 libraries, and all things being equal, runs in constant time no matter how many you're doing.*\\n
-
-\* Because concurrency.
-
-# here's a picture of a bunny with a pancake on it's head
-
-![](dorayaki_259_320-f6d17158.jpg)
+- The program is designed to work with multiple libraries concurrently.
+- It runs in constant time regardless of the number of libraries, thanks to Crystal's concurrency features.
+- Minimal changes to the core codebase are required when adding new libraries.
+- The main challenge is accurately parsing the web pages for each specific library.
