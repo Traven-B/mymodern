@@ -68,8 +68,8 @@ git clone --depth 1 https://github.com/Traven-B/mymodern.git
 
 cmake is a required dependency for the upcoming kostya/lexbor installation.
 
-A Debian specific installation command of the most likely missing build tool,
-`cmake`, is mentioned at the top of the kostya/lexbor README.
+A Debian / Ubuntu  specific installation command of the most likely missing build tool,
+`cmake`, is mentioned at the top of the [kostya/lexbor][] README.
 
 ```sh
 sudo apt install cmake
@@ -357,10 +357,8 @@ concurrently, as it knows to iterate over MODULE_NAMES.
 the specific parts of the supplied code you'll need to adapt or modify to work
 with your library's website.
 
-The above link provides a good walk through, please note the code examples in
-some cases may not match the actual code exactly. As a specific example, the
-names of attributes in `lib_data` are correct, but the way `POST_DATA` is
-namespaced may differ in the code. So copy and paste from the code files.
+The above link provides a good walk through, but please note the code examples
+in some cases may not match the actual code exactly.
 
 ### Viewing a pdf slideshow
 

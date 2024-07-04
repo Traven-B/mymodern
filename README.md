@@ -1,4 +1,3 @@
-
 # mymodern
 
 mymodern is a command line program written in [Crystal][] that scrapes web
@@ -11,9 +10,9 @@ library websites and customize the scraping logic for each.
 
 ## Installation
 
-To set up mymodern on your local machine, follow these steps:
+To set up mymodern on your machine:
 
-1. Clone the repository to your local machine.
+1. Clone the repository.
 2. Navigate to the project directory.
 3. Run the following commands:
 
@@ -22,9 +21,9 @@ shards install
 shards build
 ```
 
-The library [kostya/lexbor](https://github.com/kostya/lexbor) includes native C
-code, so there's an additional compile step for it. Don't worry, though - this
-is handled automatically during the build process.
+The library [kostya/lexbor](https://github.com/kostya/lexbor) parses HTML using
+CSS selectors. It wraps native C code and the compilation step for this
+dependency happens automatically when you run `shards install`
 
 Once installed, the library will be available locally within your project directory.
 

@@ -28,7 +28,7 @@ The {}'s and what's inside them is a named tuple that the method returns. The me
 ```crystal
 def self.lib_data
   {
-    post_data: HennepinSecrets::POST_DATA,
+    post_data: POST_DATA,
     post_url: HENN_BASE_URL + "/user/login?destination=%2F",
     checked_out_url: HENN_BASE_URL + "/v2/checkedout",
     holds_url: HENN_BASE_URL + "/v2/holds/ready_for_pickup",
@@ -43,7 +43,7 @@ end
 #### Key properties of the lib_data method
 
 ```crystal
-post_data: HennepinSecrets::POST_DATA,
+post_data: POST_DATA,
 post_url: HENN_BASE_URL + "/user/login?destination=%2F",
 checked_out_url: HENN_BASE_URL + "/v2/checkedout",
 holds_url: HENN_BASE_URL + "/v2/holds/ready_for_pickup",
@@ -62,7 +62,7 @@ the_response = @@http_client.get(the_url, cookie_headers)
 
 ```crystal
 module Hennepin
-  HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
+  POST_DATA = "card_number=12345234534567&user_pin=4321"
 end
 ```
 
@@ -81,11 +81,11 @@ The `POST_DATA` constant is defined with the library card number and PIN:
 
 ```crystal
 module Hennepin
-  HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
+  POST_DATA = "card_number=12345234534567&user_pin=4321"
 end
 ```
 
-These card_number and user_pin in the above string correspond to the `name` attributes of input tags in the library's login form:
+The card_number and user_pin in the above string correspond to the `name` attributes of input tags in the library's login form:
 
 ```html
 <form action="https://thelibrary.com/user/login?destination=" method="post">
@@ -102,7 +102,7 @@ These card_number and user_pin in the above string correspond to the `name` attr
 1. In `hennepin_secrets.cr`:
    ```crystal
    module Hennepin
-     HennepinSecrets::POST_DATA = "card_number=12345234534567&user_pin=4321"
+     POST_DATA = "card_number=12345234534567&user_pin=4321"
    end
    ```
 
@@ -111,16 +111,16 @@ These card_number and user_pin in the above string correspond to the `name` attr
    module Hennepin
      def self.lib_data
        {
-         post_data: HennepinSecrets::POST_DATA,
+         post_data: POST_DATA,
          # ... other properties
        }
      end
    end
    ```
 
-The constant HennepinSecrets::POST_DATA is defined in hennepin_secrets.cr and
-is used in the in the otherwise complete definition of the hennepin module in the
-hennepin.cr file.
+The constant POST_DATA is defined in hennepin_secrets.cr and is used in the in
+the otherwise complete definition of the hennepin module in the hennepin.cr
+file.
 
 ### Specifying post_url value
 
@@ -212,10 +212,6 @@ end
 ```
 
 It might be the top level parse method for one kind of page differs from another library's  only in its CSS selector rule.
-Here we see `table` in this parse_checkedout_page method, above we saw `div`.
-
-
-It might be the top level parse method for one kind of page differs from another library's  only in its CSS selector rule.
 Below we see `table` in a parse_checkedout_page method, above we see `div`.
 
 ```crystal
@@ -226,7 +222,7 @@ end
 
 ### parse_on_hold_page Method
 
-This top level method to parse an on hold page is not used with a URL to ask for a page with
+The following top level method to parse an on hold page is not used with a URL to ask for a page with
 only books on hold that are ready for pickup, nor does it have class attributes that mark
 books as ready for pickup.
 
@@ -235,14 +231,13 @@ When the `if status.match(/^Ready/)` succeeds, then creation of an hold record i
 and is also the last thing evaluated by the block, and so the record is mapped into the array being
 constructed and eventually assigned to books_on_hold.
 
-When the if does a test and fails to finds a book that's `Ready`, it actually produces a nil.
+When the if test fails because a book is not `Ready`, it actually produces a nil.
 So we are mapping a sequence OnHoldRecords and nils into an array.
 
 doc.css(...) makes a sequence, but it doesn't respond to map, so we first make
 it an array with `.to_a`. But note we say compact_map, not map. We could
 .compact the array to remove the nils, but we can say .compact_map instead of
 .map as another way to filter out the spurious nils.
-
 
 
 ```
@@ -336,5 +331,5 @@ To make your specific library modules known to the existing code:
 
 - The program is designed to work with multiple libraries concurrently.
 - It runs in constant time regardless of the number of libraries, thanks to Crystal's concurrency features.
-- Minimal changes to the core codebase are required when adding new libraries.
-- The main challenge is accurately parsing the web pages for each specific library.
+- Minimal changes to the codebase are required when adding new libraries.
+- The main challenge is parsing the web pages for each specific library.
