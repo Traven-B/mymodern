@@ -1,50 +1,4 @@
-# mymodern
-
-mymodern is a command line program written in [Crystal][] that scrapes web
-pages from public library websites. It uses CSS selector rules to parse the
-pages and lists checked-out books and books on hold ready for pickup.
-
-The program uses Crystal's concurrency support to handle multiple HTTP requests
-simultaneously. It is modular, allowing you to define modules for different
-library websites and customize the scraping logic for each.
-
-## Usage
-
-```sh
-bin/mymodern --help
-
-Usage: mymodern [OPTIONS]
-Scrape pages at public libraries' web sites.
-    -m, --mock                       this option mocks everything
-    -t, --trace                      trace where it's all happening
-    -h, --help                       show this message
-```
-
-Example program output:
-
-```sh
-Hennepin Books Out
-
-The Astronomer
-Tuesday December 04, 2018
-
-Subterranean Twin Cities
-Wednesday December 05, 2018
-Renewed: 1 time
-2 people waiting
-
-Hennepin Books on Hold
-
-A History of America in Ten Strikes
-Wednesday November 14, 2018
-
-St. Paul Books Out
-
-St. Paul Books on Hold
-
-The mysterious flame of Queen Loana
-Saturday November 17, 2018
-```
+# mymodern installation and development
 
 ### Running with the --mock Option
 
@@ -91,7 +45,6 @@ structure.
 
 ## Installation
 
-
 &nbsp;&nbsp; 0. Install Crystal (if you haven't already):
 
 LLVM compiler technology has let a thousand languages bloom, and Crystal is a
@@ -111,36 +64,26 @@ the compile step.
 git clone --depth 1 https://github.com/Traven-B/mymodern.git
 ```
 
-&nbsp;&nbsp; 2. [Mutatis Mutandis][] or preparing for the [kostya/lexbor][] library.
+2. Install CMake
 
-The readme of the dependency we are installing says the crystal wrapper and
-underlying library has been tested or benchmarked on more than one OS.
+cmake is a required dependency for the upcoming kostya/lexbor installation.
 
-It says before the install step make sure you have `cmake` and gives a specific
-Debian or Ubuntu command to install it on your system. So I doubt this will
-work on windows (crystal on windows is in a preview state), I know it works on
-Linux. Otherwise? Try, and try again. Then quit, no use being a fool about it.
-
-The underlying [Lexbor][] code is written in C and currently supports the
-x86_64 architecture. Its readme mentions installation on macOS with Homebrew
-and MacPorts. Also mentions vcpkg if that means anything to you.
-
-Though many build tools are a prerequisite to the upcoming step, kostya/lexbor
-singled cmake out, so see if you have it. It might be a cross platform build
-tool that you haven't needed yet.
-
-On Debian I did `which cmake`, and got the path to the binary printed.
-Then `cmake --version`, to print version information. If you're not on
-Linux, this can still work but I'm busy writing the README at the moment.
-
-While the shards install command aims to handle the installation process
-seamlessly, there's a possibility that additional build tools and dependencies
-may be required. If the installation fails, put the usual build tools on your
-system. Find a random hello c repository or 'GNU hello' and get it to compile.
+A Debian specific installation command of the most likely missing build tool,
+`cmake`, is mentioned at the top of the kostya/lexbor README.
 
 ```sh
 sudo apt install cmake
 ```
+
+Test if cmake is already installed, or verify an installation by running `cmake --version`
+
+- Visit the [CMake official website](https://cmake.org/download/) for
+  installation guidelines specific to your operating system.
+
+Additional Notes:\
+If you're new to compiling C code the upcoming install step might fail and
+you'll have to set up a development environment consisting of the usual build
+tools. You might encounter some hurdles. Don't be discouraged; this is normal.
 
 &nbsp;&nbsp; 3. Navigate to the project directory and install dependencies:
 
@@ -182,8 +125,8 @@ It is an artifact of my eventual implementation of a scheme allowing me to
 share the code I am using as is, without sharing my secrets (the login pins).
 
 Actually you want to make a tiny change to a couple of secrets files, and
-recompile, comment and uncomment where it says or just make sure you're using the
-methods listed below.
+recompile, comment and uncomment where it says or just make sure you're using
+the methods listed below.
 
 Well, it's not even a method. The first snippet is a partial definition of the
 Hennepin module. The POST_DATA constant is used in the complete Hennepin module
@@ -200,10 +143,9 @@ to supply environment variables. Simple.
 Eventually you'll need to construct a string with the = and & chars, so we'll
 use an arbitrary string that is more than you need at the moment.
 
-If I was in some kind of mood and left a wall of comments in these files, don't
-just drop these snippets in, find the actual code down at the bottom and
-comment it out, or comment and uncomment what the comments in the actual code
-part suggests.
+If all you notice is a wall of comments in these files, don't just drop these
+snippets in, find the actual code down at the bottom and comment it out, or
+comment and uncomment what the comments in the actual code part suggests.
 
 Make changes equivalent to this in two files.
 
@@ -228,7 +170,6 @@ And in the project directory where the shard.yml file is, recompile.
 ```sh
 shards build
 ```
-
 
 ## The Narrow Path
 
@@ -255,7 +196,8 @@ supply / modify.
 
 - Save a couple of webpages with your browser to get sample data from your library's website.
 - Examine the login form of the website to identify the names of the text input fields.
-- Look at the (fake) secrets in the `POST_DATA` variable in the secrets file. The format is typically `fieldname1=value1&fieldname2=value2`.
+- Look at the (fake) secrets in the `POST_DATA` variable in the secrets file.
+  The format is typically `fieldname1=value1&fieldname2=value2`.
 
 #### Troubleshooting Modern Websites
 
@@ -364,7 +306,6 @@ Do this if you think it supplies additional security. The only problem it
 solves for me is being able to share my secrets file(s) with the world as is,
 because I'm not sharing my pins.
 
-
 ## Development
 
 The program uses modules to define scraping logic for different library
@@ -412,48 +353,35 @@ concurrently, as it knows to iterate over MODULE_NAMES.
 
 ## Documentation
 
-### Viewing the PDF
+[Project Structure Documentation](PROJECT_STRUCTURE.md) outlines
+the specific parts of the supplied code you'll need to adapt or modify to work
+with your library's website.
 
-Skip to slide 24:
+The above link provides a good walk through, please note the code examples in
+some cases may not match the actual code exactly. As a specific example, the
+names of attributes in `lib_data` are correct, but the way `POST_DATA` is
+namespaced may differ in the code. So copy and paste from the code files.
 
-Note: This is a link to the file on github pages, so it should do the right
+### Viewing a pdf slideshow
+
+Skip to slide 24 to see the above link's walk through as a pdf slide show.
+
+Note: This is a link to the pdf file on github pages, so it should do the right
 thing when viewed with your browser. Your welcome. If your browser downloads it
 instead of rendering it, avoid accumulating multiple numbered copies in your
 Downloads directory. In that case once you have it, view it offline.
 
 [View in browser][modern.pdf] (**Start reading from page (slide) 24 for the relevant information**)
 
-### Code Consistency
-
-While the PDF provides a good walkthrough, please note the code examples in
-some cases may not match the actual code exactly. As a specific example, the
-names of attributes in `lib_data` are correct, but the way `POST_DATA` is
-namespaced may differ in the code. So copy and paste from the code files.
-
 ### Additional Information
 
-The actual work involves writing code using parsers for web scraping. This has
-been done with Nokogiri for Ruby, Gokogiri and Goquery for Go, and MyHTML for
-Crystal. The Kostal/Lexbor library was a drop-in replacement. You can study or
-use this code for web scraping, as the scraper libraries are quite similar.
-Some might use XPath instead of CSS selectors, but you probably know how to
-specify parts of a web page with CSS selectors.
+The actual work involves writing code using parsers for web scraping. Code to
+do this using Nokogiri for Ruby, Gokogiri and Goquery for Go, and MyHTML for
+Crystal (for which the Kostal/Lexbor library was a drop-in replacement) was all
+very similar to what we have provided here. Some libraries might use XPath
+instead of CSS selectors, but you probably know how to specify parts of a web
+page with CSS selectors.
 
-## Contributing
-
-1. Fork the repository (<https://github.com/Traven-B/mymodern/fork>)
-2. Create a new feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
-
-## Contributors
-
-- [Traven-B](https://github.com/Traven-B) Michael Kamb - creator, maintainer
-
-[Crystal]: https://crystal-lang.org
 [crystal guide]: https://crystal-lang.org/install/
 [kostya/lexbor]: https://github.com/kostya/lexbor
-[Lexbor]: https://github.com/lexbor/lexbor
-[Mutatis Mutandis]: https://en.wiktionary.org/wiki/mutatis_mutandis#Adverb "with the necessary changes having been made"
 [modern.pdf]: https://traven-b.github.io/mymodern/as_pdf_my_modern.pdf
