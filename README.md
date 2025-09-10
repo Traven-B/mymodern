@@ -8,6 +8,10 @@ The program uses Crystal's concurrency support to handle multiple HTTP requests
 simultaneously. It is modular, allowing you to define modules for different
 library websites and customize the scraping logic for each.
 
+We encourage you to explore Crystal, which features Ruby-like syntax and a
+concurrency model similar to Go's. Additionally, we have published Ruby and Go
+versions of this program, all of which provide a working demo out of the box.
+
 ## Installation
 
 To set up mymodern on your machine:
