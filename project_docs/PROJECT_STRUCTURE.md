@@ -53,7 +53,8 @@ Already existing code uses the lib_data information to post the 'post_data' to t
 
 ```crystal
 login_response = @@http_client.post(data_param[:post_url], form: data_param[:post_data])
-the_response = @@http_client.get(the_url, cookie_headers)
+spawn get_page(checked_out_webpage_channel, cookie_headers, data_param[:checked_out_url], "#{library_name} checked out")
+spawn get_page(on_hold_webpage_channel, cookie_headers, data_param[:holds_url], "#{library_name} on hold")
 ```
 
 ## Secrets Management
@@ -118,9 +119,8 @@ The card_number and user_pin in the above string correspond to the `name` attrib
    end
    ```
 
-The constant POST_DATA is defined in hennepin_secrets.cr and is used in the in
-the otherwise complete definition of the hennepin module in the hennepin.cr
-file.
+The constant POST_DATA is defined in hennepin_secrets.cr and is used in the the
+otherwise complete definition of the hennepin module in the hennepin.cr file.
 
 ### Specifying post_url value
 
@@ -227,12 +227,12 @@ only books on hold that are ready for pickup, nor does it have class attributes 
 books as ready for pickup.
 
 So we have a conditional to test actual text in the page for books whose hold status is Ready.
-When the `if status.match(/^Ready/)` succeeds, then creation of an hold record is the last statement evaluated by the if,
+When the `if status.match(/^Ready/)` succeeds, then creation of a hold record is the last statement evaluated by the if,
 and is also the last thing evaluated by the block, and so the record is mapped into the array being
 constructed and eventually assigned to books_on_hold.
 
 When the if test fails because a book is not `Ready`, it actually produces a nil.
-So we are mapping a sequence OnHoldRecords and nils into an array.
+So we are mapping a sequence of OnHoldRecords and nils into an array.
 
 doc.css(...) makes a sequence, but it doesn't respond to map, so we first make
 it an array with `.to_a`. But note we say compact_map, not map. We could
