@@ -1,6 +1,6 @@
 # mock two methods in HTTP::Client -- post(), get()
 
-class MyMockClient
+module MyMockClient
   @@filename_for = {} of String => String
 
   def self.setup
