@@ -4,7 +4,7 @@
 
 1.  **Install Crystal:**
 
-    *   Follow the [official Crystal installation guide](https://crystal-lang.org/install/).
+    * Follow the [official Crystal installation guide](https://crystal-lang.org/install/).
 
 2.  **Clone the repository:**
 
@@ -20,7 +20,7 @@
     sudo apt install cmake  # For Debian/Ubuntu
     ```
 
-    *   For other systems, visit the [CMake official website](https://cmake.org/download/).
+    * For other systems, visit the [CMake official website](https://cmake.org/download/).
 
 4.  **Navigate to the project directory and install dependencies:**
 
@@ -54,8 +54,9 @@ bin/mymodern --mock --trace
 you will be posting fake placeholder credentials to actual library websites,
 and the logins will fail.*
 
-You can place your own library\'s web pages in the directory with the sample web
-pages and use the program to develop and test your own scraping routines.
+You can place your own library\'s web pages in the directory with the sample
+web pages and use the program to develop and test your own scraping routines
+without making actual network requests.
 
 When developing your scraping routines, write a separate small program to
 develop and test the parsing of your web pages. It will compile faster, and
@@ -69,15 +70,25 @@ but simplifying it can make development easier.
 
 ### Troubleshooting Modern Websites
 
-Before using `--mock` and web page fixtures saved with your browser, consider fetching web pages directly and examining them. This ensures that the program can retrieve complete and usable content for parsing.
+#### Capturing Page Source for Parsing
 
-Some library websites may use dynamic loading techniques that prevent `mymodern` from returning a complete web page with a single GET request. To address this:
+The primary approach to start development is to save the raw HTML you want to parse from your browser's "View Page Source".
 
-*   **Start with the login form HTML:** Focus on reading the login form\'s HTML to construct your `POST_DATA` string before investing time in parsing routines for pages that might not load completely.
-*   **Verify fetched pages:** Check if the fetched page contains the expected content. For example, grep for a book title or other recognizable data.
-*   **Explore simpler options:** Look for \"print versions\" of pages or older, less complex versions of the website. Sometimes, URLs from a previous iteration of the site may still work and provide easier access to the needed data.
+Do not use your browser's "File > Save Page As" menu when viewing the normal rendered web page, as it may save additional resources and dynamic content, leading to confusion.
 
-*Don\'t assume dynamic loading will be an issue just because the website looks modern or has complex HTML when viewed in your browser\'s \"View Source.\" In many cases, this won\'t be a problem at all. My honest guess is that most library websites will work just fine.*
+Instead, in the browser, right-click in the rendered page and choose "View Page Source" (or press Ctrl+U). This shows the exact raw HTML returned by the server on the initial page load.
+
+Select all the text in the page source view, copy it, and paste into your text editor. (Again, do NOT use 'Save Page As" for the  source view either.)
+
+Before working on your fixtures, (the pages saved from your browser\'s view source,) search the HTML text for the expected content. If the rendered view had a book title, grep for it.
+
+If the expected data is present in the HTML obtained from the browser's **view source HTML**, then an initial HTTP GET request by the program should be sufficient to retrieve it.
+
+If the expected data is **not** present in the view source HTML, but appears in the fully rendered web page, this indicates the site uses dynamic Web 2.0 techniques where JavaScript loads content after the initial page load. In such cases, the program's single HTTP GET approach will not be enough.
+
+To handle such dynamic sites, consider looking for simpler or print-friendly versions of pages, or earlier but still working versions of pages (earlier but still working URLs) that provide the needed data statically.
+
+Don’t assume dynamic loading is a problem just because a site looks modern or complex when inspected in your browser's rendered view - if the data appears in the View Page Source, the program should work. Some “Web 2.0” techniques still provide all needed data as HTML on the initial GET.
 
 ### Using Real Credentials
 
