@@ -79,6 +79,10 @@ module MyModern
     # Fetch a single page concurrently
     the_response = @@http_client.not_nil!.get(the_url, cookie_headers)
 
+    # Uncomment for troubleshooting remote HTML:
+    # puts "#{extra}: status=#{the_response.status_code} size=#{the_response.body.size}"
+    # File.write("debug_#{extra.gsub(/\s/, '_')}.html", the_response.body)
+
     dt "after get #{extra}" # if we used mock client, it did a Fiber.yield
 
     # Send the result on the corresponding channel
