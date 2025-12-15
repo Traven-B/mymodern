@@ -13,6 +13,9 @@ o = OptionParser.new do |opts|
   opts.on("-t", "--trace", "trace where it's all happening") do
     options[:trace] = true
   end
+  opts.on("-s", "--sequential", "wait for each request to complete before next") do
+    options[:sequential] = true
+  end
   opts.on("-h", "--help", "show this message") do
     puts opts
     exit
@@ -41,4 +44,4 @@ else
   the_client = HTTP::Client
 end
 
-MyModern.setup(the_client).run
+MyModern.setup(the_client, options[:sequential]).run
